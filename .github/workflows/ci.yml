@@ -1,0 +1,23 @@
+name: Maven CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Клонируем код
+        uses: actions/checkout@v4
+
+      - name: ☕ Устанавливаем Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: 🧪 Запускаем тесты и сборку
+        run: mvn clean verify
+
+      - name: ✅ Готово
+        run: echo "Сборка завершена успешно ✅"
