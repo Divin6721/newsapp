@@ -6,6 +6,40 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: newsapp_db
+          POSTGRES_USER: springuser
+          POSTGRES_PASSWORD: 123654
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U springuser"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      SPRING_PROFILES_ACTIVE: test
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/newsapp_db
+      SPRING_DATASOURCE_USERNAME: springuser
+      SPRING_DATASOURCE_PASSWORD: 123654
+      SPRING_REDIS_HOST: localhost
+      SPRING_REDIS_PORT: 6379
+      JWT_SECRET_KEY: testsecretkey
+
     steps:
       - name: 📥 Клонируем код
         uses: actions/checkout@v4
@@ -16,8 +50,8 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: 🧪 Запускаем тесты и сборку
+      - name: ✅ Запускаем тесты и сборку
         run: mvn clean verify
 
-      - name: ✅ Готово
-        run: echo "Сборка завершена успешно ✅"
+      - name: 🎉 Готово
+        run: echo "✅ Сборка завершена успешно"
